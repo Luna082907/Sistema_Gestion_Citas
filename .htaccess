@@ -1,0 +1,23 @@
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "^(\.env|composer\.(json|lock)|phpunit\.xml|README.*\.md)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # No permite acceso web directo al código y a la configuración.
+    RewriteRule ^(?:bootstrap|config|database|scripts|src|tests|vendor|views)(?:/|$) - [F,L,NC]
+
+    # Publica los recursos estáticos sin exponer el resto de la carpeta public.
+    RewriteRule ^assets/(.*)$ public/assets/$1 [L,NC]
+    
+    # Todas las rutas de la aplicación pasan por el controlador frontal.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>
