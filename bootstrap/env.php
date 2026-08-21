@@ -11,7 +11,7 @@ function load_env_file(string $path): void {
         return;
     }
 
-    $lines=file($path,FILE-IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    $lines=file($path,FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     if ($lines === false){
         return;
     }
