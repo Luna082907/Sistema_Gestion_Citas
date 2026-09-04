@@ -2,15 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Core;
+namespace App\Controller;
 
 use PDO;
 use Throwable;
 
-final class HealthController
-{
-    public function __construct(private PDO $pdo)
-    {
+final class HealthController{
+    public function __construct(private PDO $pdo){
     }
 
     public function show(): void

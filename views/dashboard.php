@@ -28,6 +28,7 @@
             <a href="<?=e(url('/patients/create'))?>" class="button secondary">Registrar paciente</a>
             <a href="<?=e(url('/patients'))?>" class="button secondary">Consultar pacientes</a>
             <a href="<?=e(url('/appointments'))?>" class="button secondary">Consultar citas</a>
+            <a href="<?=e(url('/doctors/create'))?>" class="button secondary">Registrar médico</a>
         </div>
     </section>
 

@@ -72,6 +72,7 @@ final class Router
 
         call_user_func_array($route['handler'], $params);
         return;
+
     }
 
     if ($pathMatchedWithAnotherMethod) {
@@ -84,6 +85,9 @@ final class Router
     http_response_code(404);
     View::render('errors/404', ['title' => 'Página no encontrada']);
     }
+
+    
+
 }
 
 ?>

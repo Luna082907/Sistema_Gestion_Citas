@@ -6,7 +6,7 @@ namespace App\Controller;
 
 use App\Core\Auth;
 use App\Core\View;
-use App\Repository\AppointmenteRepository;
+use App\Repository\AppointmentRepository;
 use App\Repository\PatientRepository;
 
 final class DashboardController {
@@ -17,11 +17,12 @@ final class DashboardController {
     }
 
     public function index(): void{
-        Auth:requireLogin();
-        View::render('dashboard', [
+        Auth::requireLogin();
+        View::render('dashboard/index', [
             'title' => 'Inicio',
             'patientCount' => $this->patients->count(),
-            'scheduledCount' => $this->appointments->countToday(),
+            'scheduledCount' => $this->appointments->countScheduled(),
+            'todayCount' => $this->appointments->countToday(),
         ]);
     }
 }

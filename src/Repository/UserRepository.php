@@ -15,7 +15,7 @@ final class UserRepository{
         $statement = $this->pdo->prepare(
             'SELECT id, name, email, password_hash, role FROM users WHERE email = :email AND active = 1 LIMIT 1'
         );
-        $statement->execute(['email => $email']);
+        $statement->execute(['email' => $email]);
         $user = $statement->fetch();
 
         return $user === false ? null : $user;

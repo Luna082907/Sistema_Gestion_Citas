@@ -31,6 +31,8 @@
                     <th>Paciente</th>
                     <th>Nacimiento</th>
                     <th>Contacto</th>
+                    <th>¿Quiere?</th>
+                    <th>¿Desea?</th>
                 </tr>
             </thead>
             <tbody>
@@ -40,13 +42,26 @@
                     <td><?= e($patient['first_name'] . ' ' . $patient['last_name']) ?></td>
                     <td><?= e(format_date($patient['birth_date'])) ?></td>
                     <td><?= e($patient['phone'] ?: $patient['email'] ?: 'Sin dato') ?></td>
+                    <td><a class="button secondary" href="<?= e(url('/patients/' . $patient['id'] . '/edit')) ?>">Editar</a></td>
+                    <td>
+                        <form
+                            method="POST"
+                            action="<?= e(url('/patients/' . $patient['id'] . '/delete')) ?>"
+                            style="display:inline;"
+                            data-confirm="¿Esta seguro?"
+                            >
+                            <?= csrf_field() ?>
+                            <button type="submit" class="button danger">
+                            Eliminar
+                            </button>
+                        </form>
+                    </td>
                 </tr>
                 <?php endforeach; ?>
-                <?php if ($patients === []): ?><tr><td colspan="4">No se encontraron pacientes.</td></tr><?php endif; ?>
+                <?php if ($patients === []): ?><tr><td colspan="6">No se encontraron pacientes.</td></tr><?php endif; ?>
             </tbody>
         </table>
     </div>
-
 
 </body>
 </html>

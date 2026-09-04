@@ -1,26 +1,22 @@
 <?php
 
-declare (strict_types=1);
+declare(strict_types=1);
 
 namespace App\Core;
 
 use RuntimeException;
 
 final class View{
-    public static function render(string $template,array $data = []): void{
-        $root = dirname(__DIR__,2).'/views';
-        $file = $root.'/'.$template.'.php';
-
-        if(!is_file($file)){
-            throw new RuntimeException("La vista ($template) no eixste.");
+    public static function render(string $template, array $viewData = []): void{
+        $root = dirname(__DIR__, 2) . '/views';
+        $file = $root . '/' . $template . '.php';
+        if (!is_file($file)) {
+            throw new RuntimeException("NO ENCUENTRA: " . $file);
         }
-
-        extract($data, EXTR_SKIP);
+        extract($viewData, EXTR_SKIP);
         ob_start();
         require $file;
         $content = (string) ob_get_clean();
-        require $root.'layout.php';
+        require $root . '/layout.php';
     }
 }
-
-?>

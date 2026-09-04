@@ -10,7 +10,6 @@ use App\Core\View;
 use App\Repository\UserRepository;
 
 final class AuthController{
-
     private const MAX_ATTEMPTS = 5;
     private const LOCK_SECONDS = 60;
 
@@ -19,13 +18,12 @@ final class AuthController{
 
     public function showLogin(): void{
         if (Auth::check()) {
-        redirect('/');
+            redirect('/');
         }
         View::render('auth/login', ['title' => 'Iniciar sesión']);
     }
 
     public function login(): void{
-
         Csrf::requireValid($_POST['_token'] ?? null);
         $email = mb_strtolower(trim((string) ($_POST['email'] ?? '')));
         $password = (string) ($_POST['password'] ?? '');
@@ -73,29 +71,22 @@ final class AuthController{
 
     private function registerFailure(): void{
         $failures = $_SESSION['_login_failures'] ?? ['count' => 0, 'first_at' => time()];
-
         if (time() - (int) $failures['first_at'] > self::LOCK_SECONDS) {
             $failures = ['count' => 0, 'first_at' => time()];
         }
-
         $failures['count']++;
         $_SESSION['_login_failures'] = $failures;
     }
 
     private function isLocked(): bool{
         $failures = $_SESSION['_login_failures'] ?? null;
-
         if (!is_array($failures)) {
             return false;
         }
-
         if (time() - (int) $failures['first_at'] > self::LOCK_SECONDS) {
             unset($_SESSION['_login_failures']);
             return false;
         }
-
         return (int) $failures['count'] >= self::MAX_ATTEMPTS;
     }
 }
-
-?>
