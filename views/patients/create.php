@@ -63,6 +63,16 @@
         </div>
 
         <div class="form-actions full-width">
+            <label for="active">Estado</label>
+            <select id="active" name="active" required>
+                <option value="">Seleccione</option>
+                <option value="1" <?= ($data['active'] ?? '') === '1' ? 'selected' : '' ?>>Activo</option>
+                <option value="0" <?= ($data['inactive'] ?? '') === '0' ? 'selected' : '' ?>>Inactivo</option>
+            </select>
+            <?php if (isset($errors['active'])): ?><small class="field-error"><?= e($errors['active']) ?></small><?php endif; ?>
+        </div>
+
+        <div class="form-actions full-width">
             <a class="button secondary" href="<?= e(url('/patients')) ?>">Cancelar</a>
             <button class="button primary" type="submit">Guardar paciente</button>
         </div>

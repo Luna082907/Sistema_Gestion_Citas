@@ -16,16 +16,33 @@ final class DoctorController{
     public function __construct(private DoctorRepository $doctors){
     }
 
-    public function index(): void{
-        Auth::requireLogin();
-        $term = trim((string) ($_GET['q'] ?? ''));
-        View::render('doctors/index',
-        [
-            'title' => 'Médicos',
-            'doctors' => $this->doctors->search($term),
-            'term' => $term,
-        ]);
+    public function index(): void
+{
+    Auth::requireLogin();
+
+    $term = trim((string) ($_GET['q'] ?? ''));
+
+    $perPage = 10;
+    $page = (int) ($_GET['page'] ?? 1);
+    if ($page < 1) {
+        $page = 1;
     }
+
+    $result = $this->doctors->search($term, $page, $perPage);
+    $total = $result['total'];
+    $totalPages = $total > 0 ? (int) ceil($total / $perPage) : 1;
+
+    View::render('doctors/index',
+    [
+        'title' => 'Médicos',
+        'doctors' => $result['items'],
+        'term' => $term,
+        'page' => $page,
+        'perPage' => $perPage,
+        'total' => $total,
+        'totalPages' => $totalPages,
+    ]);
+}
 
     public function create(): void{
         Auth::requireLogin();
@@ -197,6 +214,26 @@ final class DoctorController{
             throw $exception;
         }
     } 
+
+    private function requireAccessibleAppointment(string $id): array
+    {
+        $appointment = $this->appointments->find((int) $id);
+
+        if ($appointment === null) {
+            http_response_code(404);
+            View::render('errors/404', ['title' => 'Cita no encontrada']);
+            exit;
+        }
+
+        if (Auth::hasRole(Auth::ROLE_DOCTOR)
+            && (int) $appointment['doctor_id'] !== (int) Auth::doctorId()) {
+            Auth::deny();                 // 403: la cita es de otro médico
+        }
+
+        return $appointment;
+    }
+
+    
 }
 
 

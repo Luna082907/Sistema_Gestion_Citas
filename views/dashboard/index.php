@@ -8,16 +8,24 @@
 
 <div class="cards">
     <article class="metric-card">
-        <span>Pacientes registrados</span>
-        <strong><?= e($patientCount) ?></strong>
+        <span>Citas para hoy</span>
+        <strong><?= e($todayCount) ?></strong>
     </article>
     <article class="metric-card">
-        <span>Citas activas</span>
+        <span>Citas pendientes</span>
         <strong><?= e($scheduledCount) ?></strong>
     </article>
     <article class="metric-card">
-        <span>Citas para hoy</span>
-        <strong><?= e($todayCount) ?></strong>
+        <span>Citas atendidas</span>
+        <strong><?= e($attendedCount) ?></strong>
+    </article>
+    <article class="metric-card">
+        <span>Citas canceladas</span>
+        <strong><?= e($cancelledCount) ?></strong>
+    </article>
+    <article class="metric-card">
+        <span>Pacientes registrados</span>
+        <strong><?= e($patientCount) ?></strong>
     </article>
 </div>
 

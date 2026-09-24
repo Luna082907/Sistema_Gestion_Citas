@@ -10,24 +10,51 @@ final class DoctorRepository{
     public function __construct(private PDO $pdo){
     }
 
-    public function search(string $term = ''): array{
-        if ($term === ''){
-            return $this->pdo->query(
-                'SELECT * FROM doctors ORDER BY last_name, first_name LIMIT 100'
-            )-> fetchAll();
-        }
+    public function search(string $term, int $page = 1, int $perPage = 5): array
+{
+    $page = max(1, $page);
+    $perPage = max(1, $perPage);
+    $offset = ($page - 1) * $perPage;
 
-        $statement = $this->pdo->prepare(
-            'SELECT * FROM doctors WHERE license_number LIKE :license_term OR first_name LIKE :first_name_term OR last_name LIKE :last_name_term ORDER BY last_name, first_name LIMIT 100'
-        );
-        $likeTerm = '%'.$term.'%';
-        $statement->execute([
-            'license_term' => $likeTerm,
-            'first_name_term' => $likeTerm,
-            'last_name_term' => $likeTerm,
-        ]);
-        return $statement->fetchAll();
+    $where = '';
+    $params = [];
+
+    if ($term !== '') {
+        $where = 'WHERE license_number LIKE :license_term'
+            . ' OR first_name LIKE :first_term'
+            . ' OR last_name LIKE :last_term';
+
+        $like = '%' . $term . '%';
+        $params = [
+            'license_term' => $like,
+            'first_term' => $like,
+            'last_term' => $like,
+        ];
     }
+
+    $countStmt = $this->pdo->prepare("SELECT COUNT(*) FROM doctors {$where}");
+    $countStmt->execute($params);
+    $total = (int) $countStmt->fetchColumn();
+
+    $sql = "SELECT * FROM doctors {$where}"
+        . ' ORDER BY last_name, first_name'
+        . ' LIMIT :limit OFFSET :offset';
+
+    $stmt = $this->pdo->prepare($sql);
+
+    foreach ($params as $name => $value) {
+        $stmt->bindValue(':' . $name, $value, PDO::PARAM_STR);
+    }
+
+    $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+    $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+    $stmt->execute();
+
+    return [
+        'items' => $stmt->fetchAll(),
+        'total' => $total,
+    ];
+}
 
     public function active():array{
         return $this->pdo->query(

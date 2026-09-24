@@ -1,3 +1,10 @@
+<?php
+use App\Core\Auth;
+
+$canCancel = Auth::hasRole(Auth::ROLE_ADMIN, Auth::ROLE_RECEPTIONIST);
+$canClose  = Auth::hasRole(Auth::ROLE_ADMIN, Auth::ROLE_RECEPTIONIST, Auth::ROLE_DOCTOR);
+?>
+
 <section class="page-header">
     <div><h1>Cita #<?= e($appointment['id']) ?></h1><p>Información completa de la cita.</p></div>
     <a class="button secondary" href="<?= e(url('/appointments')) ?>">Volver</a>
@@ -18,7 +25,7 @@
 <?php if ($appointment['status'] === 'scheduled'): ?>
 <?php $appointmentMoment = new DateTimeImmutable($appointment['appointment_date'] . ' ' . $appointment['appointment_time']); ?>
 <div class="actions">
-<?php if ($appointmentMoment <= new DateTimeImmutable('now')): ?>
+<?php if ($canClose && $appointmentMoment <= new DateTimeImmutable('now')): ?>
 
 <form method="post" action="<?= e(url('/appointments/' . $appointment['id'] . '/complete')) ?>" data-confirm="¿Confirma que la cita fue atendida?">
     <?= csrf_field() ?>
@@ -27,10 +34,12 @@
 
 <?php endif; ?>
 
+<?php if ($canCancel): ?>
 <form method="post" action="<?= e(url('/appointments/' . $appointment['id'] . '/cancel')) ?>" data-confirm="¿Está seguro de cancelar esta cita?">
     <?= csrf_field() ?>
     <button class="button danger" type="submit">Cancelar cita</button>
 </form>
+<?php endif; ?>
 
 </div>
 <?php endif; ?>

@@ -1,7 +1,10 @@
 <?php
-use App\Core\Auth;
-$success = flash('success');
-$errorFlash = flash('error');
+    use App\Core\Auth;
+    $success = flash('success');
+    $errorFlash = flash('error');
+    $isAdmin = Auth::hasRole(Auth::ROLE_ADMIN);
+    $isReceptionist = Auth::hasRole(Auth::ROLE_RECEPTIONIST);
+    $isDoctor = Auth::hasRole(Auth::ROLE_DOCTOR);
 ?>
 
 <!doctype html>
@@ -27,13 +30,14 @@ $errorFlash = flash('error');
                 <nav aria-label="Navegación principal">
                     <a href="<?= e(url('/')) ?>">Inicio</a> <!--Conexion con los demás archivos dependiendo sus carpetas-->
                     <a href="<?= e(url('/patients')) ?>">Pacientes</a>
+                    <a href="<?= e(url('/doctors')) ?>">Médicos</a>
+                    <a href="<?= e(url('/rooms')) ?>">Consultorios</a>
                     <a href="<?= e(url('/appointments')) ?>">Citas</a>
                     <a href="<?= e(url('/appointments/create')) ?>">Asignar cita</a>
-                    <a href="<?= e(url('/appointments/agenda')) ?>">Agenda</a>
-                    <a href="<?= e(url('/doctors')) ?>">Médicos</a>
+                    <a href="<?= e(url('/agenda')) ?>">Agenda</a>
                 </nav>
                 <div class="user-menu">
-                    <span><?= e(Auth::user()['name']) ?></span>
+                    <span><?php if (Auth::check()): ?><?= e(Auth::user()['name']) ?><?php endif; ?></span>
                     <form method="post" action="<?= e(url('/logout')) ?>">
                         <?= csrf_field() ?>
                         <button class="link-button" type="submit">Salir</button>

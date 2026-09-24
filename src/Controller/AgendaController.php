@@ -1,8 +1,8 @@
-<?php
+<?php /**Decide que debe hacer a partir de una accion recibida */
 
-declare(strict_types=1);
+declare(strict_types=1); 
 
-namespace App\Controller;
+namespace App\Controller; /**Indica a que pertenece la clase */
 
 use App\Core\Auth;
 use App\Core\View;
@@ -10,7 +10,7 @@ use App\Repository\AppointmentRepository; /**Conexion con los demás repositorio
 use App\Repository\DoctorRepository;
 use App\Repository\RoomRepository;
 
-final class AgendaController
+final class AgendaController /** */
 {
     public function __construct(
         private AppointmentRepository $appointments,

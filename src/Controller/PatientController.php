@@ -18,16 +18,35 @@ final class PatientController{
 
     public function index(): void{
         Auth::requireLogin();
+        Auth::requireRole(Auth::ROLE_ADMIN, Auth::ROLE_RECEPTIONIST, Auth::ROLE_DOCTOR);
+
         $term = trim((string) ($_GET['q'] ?? ''));
-        View::render('patients/index', [
+
+        $perPage = 10;
+        $page = (int) ($_GET['page'] ?? 1);
+        if ($page < 1) {
+            $page = 1;
+        }
+
+        $result = $this->patients->search($term, $page, $perPage);
+        $total = $result['total'];
+        $totalPages = $total > 0 ? (int) ceil($total / $perPage) : 5;
+
+        View::render('patients/index',
+        [
             'title' => 'Pacientes',
-            'patients' => $this->patients->search($term),
+            'patients' => $result['items'],
             'term' => $term,
+            'page' => $page,
+            'perPage' => $perPage,
+            'total' => $total,
+            'totalPages' => $totalPages,
         ]);
     }
 
     public function create(): void{
         Auth::requireLogin();
+        Auth::requireRole(Auth::ROLE_ADMIN, Auth::ROLE_RECEPTIONIST); // el médico no registra
         View::render('patients/create', [
             'title' => 'Registrar paciente',
             'data' => [],
@@ -176,6 +195,7 @@ final class PatientController{
 
     public function delete(int $id): void{
         Auth::requireLogin();
+        Auth::requireRole(Auth::ROLE_ADMIN);                          // solo admin elimina}
         Csrf::requireValid($_POST['_token'] ?? null);
 
         $patient = $this->patients->findById($id);
@@ -203,5 +223,31 @@ final class PatientController{
             throw $exception;
         }
     } 
+
+    private function requireAccessibleAppointment(string $id): array
+    {
+        $appointment = $this->appointments->find((int) $id);
+
+        if ($appointment === null) {
+            http_response_code(404);
+            View::render('errors/404', ['title' => 'Cita no encontrada']);
+            exit;
+        }
+
+        if (Auth::hasRole(Auth::ROLE_DOCTOR)
+            && (int) $appointment['doctor_id'] !== (int) Auth::doctorId()) {
+            Auth::deny();                 // 403: la cita es de otro médico
+        }
+
+        return $appointment;
+    }
+
+    public function listByDoctor(int $doctorId, string $document = ''): array
+    {
+        // SELECT ... FROM appointments ... WHERE a.doctor_id = :doctor_id ...
+    }
+
+    public function markNoShow(int $id, int $userId): bool { /* status = 'no_show' */ }
+    public function updateNotes(int $id, ?string $notes): bool { /* UPDATE notes */ }
 
 }

@@ -11,20 +11,23 @@ final class Router
     public function __construct(private readonly string $basePath = ''){
     }
 
-    public function get(string $path, callable|array $handler): void {
-        $this->add('GET', $path, $handler);
+    public function get(string $path, callable|array $handler, array $middleware = []): void
+    {
+        $this->add('GET', $path, $handler, $middleware);
     }
 
-    public function post(string $path, callable|array $handler): void {
-        $this->add('POST', $path, $handler);
+    public function post(string $path, callable|array $handler, array $middleware = []): void
+    {
+        $this->add('POST', $path, $handler, $middleware);
     }
 
-    private function add(string $method, string $path, callable|array $handler): void{
-        $normalizedPath = $path !== '/' ? rtrim($path, '/') : '/';
+    private function add(string $method, string $path, callable|array $handler, array $middleware = []): void
+    {
         $this->routes[] = [
-            'method' => strtoupper($method),
-            'path' => $normalizedPath,
-            'handler' => $handler,
+            'method'     => strtoupper($method),
+            'path'       => $path !== '/' ? rtrim($path, '/') : '/',
+            'handler'    => $handler,
+            'middleware' => $middleware,
         ];
     }
 
@@ -70,6 +73,10 @@ final class Router
             }
         }
 
+        foreach ($route['middleware'] as $middleware) {
+            $middleware($params, $path);   // corta la petición si no está autorizado
+        }
+        
         call_user_func_array($route['handler'], $params);
         return;
 
@@ -84,9 +91,28 @@ final class Router
     
     http_response_code(404);
     View::render('errors/404', ['title' => 'Página no encontrada']);
+
+    foreach ($route['middleware'] as $middleware) {
+    $middleware($params, $path);   // corta la petición si no está autorizado
     }
 
+    call_user_func_array($route['handler'], $params);
     
+    }
+
+    public static function guard(string ...$roles): callable
+    {
+        return static function () use ($roles): void {
+            self::requireRole(...$roles);
+        };
+    }
+
+    public static function deny(): never
+    {
+        http_response_code(403);
+        View::render('errors/403', ['title' => 'Acceso denegado']);
+        exit;
+    }
 
 }
 

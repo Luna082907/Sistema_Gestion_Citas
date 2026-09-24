@@ -23,6 +23,8 @@ final class DashboardController {
             'patientCount' => $this->patients->count(),
             'scheduledCount' => $this->appointments->countScheduled(),
             'todayCount' => $this->appointments->countToday(),
+            'attendedCount' => $this->appointments->countAttended(),
+            'cancelledCount' => $this->appointments->countCancelled(),
         ]);
     }
 }

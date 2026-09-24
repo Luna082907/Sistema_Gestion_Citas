@@ -136,16 +136,28 @@ final class AppointmentRepository{
         return $statement->rowCount() === 1;
     }
 
+    public function countToday(): int{
+        return (int) $this->pdo->query(
+        "SELECT COUNT(*) FROM appointments
+        WHERE appointment_date = CURRENT_DATE AND status = 'scheduled'"
+        )->fetchColumn();
+    }
+
     public function countScheduled(): int{
         return (int) $this->pdo->query(
         "SELECT COUNT(*) FROM appointments WHERE status = 'scheduled'"
         )->fetchColumn();
     }
 
-    public function countToday(): int{
+    public function countAttended(): int{
         return (int) $this->pdo->query(
-        "SELECT COUNT(*) FROM appointments
-        WHERE appointment_date = CURRENT_DATE AND status = 'scheduled'"
+        "SELECT COUNT(*) FROM appointments WHERE status = 'completed'"
+        )->fetchColumn();
+    }
+
+    public function countCancelled(): int{
+        return (int) $this->pdo->query(
+        "SELECT COUNT(*) FROM appointments WHERE status = 'cancelled'"
         )->fetchColumn();
     }
 
@@ -226,6 +238,14 @@ final class AppointmentRepository{
             return $statement->fetchAll(); /**Recoge y devuelve */
 
     }
+
+    public function listByDoctor(int $doctorId, string $document = ''): array
+    {
+        // SELECT ... FROM appointments ... WHERE a.doctor_id = :doctor_id ...
+    }
+
+    public function markNoShow(int $id, int $userId): bool { /* status = 'no_show' */ }
+    public function updateNotes(int $id, ?string $notes): bool { /* UPDATE notes */ }
 
 
 }

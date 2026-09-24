@@ -31,6 +31,24 @@ final class RouterTest extends TestCase
         $this->assertSame(['/agenda', '/appointments/agenda'], $calledPaths);
     }
 
+    public function testProtectedRoomRoutesRunMiddleware(): void
+    {
+        $middlewareCalled = false;
+        $handlerCalled = false;
+        $router = new Router();
+
+        $router->get('/rooms/create', static function () use (&$handlerCalled): void {
+            $handlerCalled = true;
+        }, [static function () use (&$middlewareCalled): void {
+            $middlewareCalled = true;
+        }]);
+
+        $router->dispatch('GET', '/rooms/create');
+
+        $this->assertTrue($middlewareCalled);
+        $this->assertTrue($handlerCalled);
+    }
+
     public function testDoctorSpecialtyValidationAcceptsAccentedValues(): void
     {
         $controller = new DoctorController(new DoctorRepository(new PDO('sqlite::memory:')));

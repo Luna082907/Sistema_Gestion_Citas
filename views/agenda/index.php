@@ -11,13 +11,7 @@
 
         <div>
             <label for="date">Fecha</label>
-
-            <input
-                id="date"
-                name="date"
-                type="date"
-                value="<?= e($date) ?>"
-            >
+            <input id="date" name="date" type="date" value="<?= e($date) ?>"> <!--Selecciona fecha desde la actual-->
         </div>
 
         <div>
@@ -27,14 +21,11 @@
 
                 <option value="">Todos</option>
 
-                <?php foreach ($doctors as $doctor): ?>
+                <?php foreach ($doctors as $doctor): ?> <!--Busca los doctores disponibles en la base de datos-->
 
-                    <option
-                        value="<?= e($doctor['id']) ?>"
-                        <?= (int) ($doctorId ?? 0) === (int) $doctor['id'] ? 'selected' : '' ?>
-                    >
+                    <option value="<?= e($doctor['id']) ?>" <?= (int) ($doctorId ?? 0) === (int) $doctor['id'] ? 'selected' : '' ?>>
                         <?= e(
-                            $doctor['first_name']
+                            $doctor['first_name'] //**Con su primer nombre y apellido */
                             . ' '
                             . $doctor['last_name']
                         ) ?>
@@ -43,6 +34,7 @@
                 <?php endforeach; ?>
 
             </select>
+
         </div>
 
         <div>
@@ -51,27 +43,9 @@
             <select id="status" name="status">
 
                 <option value="">Todos</option>
-
-                <option
-                    value="scheduled"
-                    <?= ($status ?? '') === 'scheduled' ? 'selected' : '' ?>
-                >
-                    Programada
-                </option>
-
-                <option
-                    value="completed"
-                    <?= ($status ?? '') === 'completed' ? 'selected' : '' ?>
-                >
-                    Completada
-                </option>
-
-                <option
-                    value="cancelled"
-                    <?= ($status ?? '') === 'cancelled' ? 'selected' : '' ?>
-                >
-                    Cancelada
-                </option>
+                <option value="scheduled" <?= ($status ?? '') === 'scheduled' ? 'selected' : '' ?>>Programada</option> <!--Selecciona el estado de la cita-->
+                <option value="completed" <?= ($status ?? '') === 'completed' ? 'selected' : '' ?>>Completada</option>
+                <option value="cancelled" <?= ($status ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelada</option>
 
             </select>
         </div>
@@ -82,13 +56,10 @@
             <select id="room_id" name="room_id">
 
                 <option value="">Todos</option>
+                
+                <?php foreach ($rooms as $room): ?> <!--Busca los consultorios disponibles en la base de datos-->
 
-                <?php foreach ($rooms as $room): ?>
-
-                    <option
-                        value="<?= e($room['id']) ?>"
-                        <?= (int) ($roomId ?? 0) === (int) $room['id'] ? 'selected' : '' ?>
-                    >
+                    <option value="<?= e($room['id']) ?>" <?= (int) ($roomId ?? 0) === (int) $room['id'] ? 'selected' : '' ?>>
                         <?= e(
                             $room['code']
                             . ' - '
@@ -103,16 +74,8 @@
 
         <div class="form-actions full-width">
 
-            <button class="button primary" type="submit">
-                Filtrar
-            </button>
-
-            <a
-                class="button secondary"
-                href="<?= e(url('/agenda')) ?>"
-            >
-                Limpiar
-            </a>
+            <button class="button primary" type="submit">Filtrar</button>
+            <a class="button secondary" href="<?= e(url('/agenda')) ?>">Limpiar</a>
 
         </div>
 
@@ -122,18 +85,11 @@
 
 <section class="panel">
 
-    <h2>
-        Citas
-        <?php if ($date !== ''): ?>
-            del <?= e(format_date($date)) ?>
-        <?php endif; ?>
-    </h2>
+    <h2>Citas <?php if ($date !== ''): ?>del <?= e(format_date($date)) ?><?php endif; ?></h2>
 
     <?php if ($appointments === []): ?>
 
-        <p>
-            No se encontraron citas con los filtros seleccionados.
-        </p>
+        <p>No se encontraron citas con los filtros seleccionados.</p>
 
     <?php else: ?>
 
@@ -158,14 +114,8 @@
 
                         <tr>
 
-                            <td>
-                                <?= e(format_date($appointment['appointment_date'])) ?>
-                            </td>
-
-                            <td>
-                                <?= e(format_time($appointment['appointment_time'])) ?>
-                            </td>
-
+                            <td><?= e(format_date($appointment['appointment_date'])) ?></td>
+                            <td><?= e(format_time($appointment['appointment_time'])) ?></td>
                             <td>
                                 <?= e(
                                     $appointment['patient_first_name']
@@ -189,10 +139,7 @@
                                     . $appointment['room_name']
                                 ) ?>
                             </td>
-
-                            <td>
-                                <?= e($appointment['status']) ?>
-                            </td>
+                            <td><?= e($appointment['status']) ?></td>
 
                         </tr>
 
